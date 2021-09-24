@@ -82,7 +82,7 @@ class IPNHandDataset():
         df_anns = pd.read_csv(annotation_path)
         return df_anns
 
-    def _get_train_test_sequences(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def _get_train_test_sequences(self) -> Tuple[List[str], List[str]]:
         """Get train/test split given by the authors of IPN Hand Dataset
 
         Returns tuple of pd.DataFrame for train and test with columns:
@@ -91,8 +91,8 @@ class IPNHandDataset():
         """
         video_train_path = os.path.join(self.root, "annotations", "Video_TrainList.txt")
         video_test_path = os.path.join(self.root, "annotations", "Video_TestList.txt")
-        df_video_train = pd.read_csv(video_train_path, sep="\t", names=["video", "length"])
-        df_video_test = pd.read_csv(video_test_path, sep="\t", names=["video", "length"])
+        df_video_train = pd.read_csv(video_train_path, sep="\t", header=None)[0]
+        df_video_test = pd.read_csv(video_test_path, sep="\t", header=None)[0]
         return df_video_train, df_video_test
 
     def __init__(self, root:str=IPN_HAND_ROOT, sequences:List[str]=None):
@@ -109,13 +109,4 @@ class IPNHandDataset():
 # test script
 if __name__ == "__main__":
     # dataset = IPNHandDataset()
-    video_dir = os.path.join(IPN_HAND_ROOT, "videos")
-    cap = cv2.VideoCapture(os.path.join(video_dir, "1CM1_1_R_#218.avi"))
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if ret:
-            cv2.imshow("video", frame)
-            if cv2.waitKey(20) == 27: # ESC key
-                break
-    cv2.destroyAllWindows()
-    cap.release()
+    pass
