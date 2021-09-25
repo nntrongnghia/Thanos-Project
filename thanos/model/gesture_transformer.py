@@ -32,13 +32,13 @@ class GestureTransformer(nn.Module):
         x = self.classifier(x)
         return x
 
-def build_detector():
+def build_detector(n_encoder_heads=4, n_encoders=3):
     backbone = resnet10()
     model = GestureTransformer(
         backbone,
-        num_classes=2, 
-        n_encoder_heads=4,
-        n_encoders=3
+        num_classes=1, 
+        n_encoder_heads=n_encoder_heads,
+        n_encoders=n_encoders
     )
     return model
 
