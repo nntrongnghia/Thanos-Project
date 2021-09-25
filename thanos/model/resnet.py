@@ -1,7 +1,3 @@
-"""
-From official PyTorch torchvision models
-"""
-
 import torch
 import torchvision
 from torchvision.models.resnet import BasicBlock, Bottleneck, conv1x1, conv3x3

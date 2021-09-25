@@ -1,4 +1,4 @@
-"""Inspired from https://github.com/aimagelab/TransformerBasedGestureRecognition
+"""From https://github.com/aimagelab/TransformerBasedGestureRecognition
 """
 import torch
 import torch.nn as nn
