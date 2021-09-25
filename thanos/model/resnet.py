@@ -49,9 +49,6 @@ class ResNet(nn.Module):
                                        dilate=replace_stride_with_dilation[1])
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2,
                                        dilate=replace_stride_with_dilation[2])
-        if not skip_last_activation:                               
-            self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-            self.fc = nn.Linear(512 * block.expansion, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -106,12 +103,6 @@ class ResNet(nn.Module):
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
-
-        if not self.skip_last_activation:
-            x = self.avgpool(x)
-            x = torch.flatten(x, 1)
-            x = self.fc(x)
-
         return x
 
     def forward(self, x: Tensor) -> Tensor:
@@ -120,18 +111,17 @@ class ResNet(nn.Module):
 
 def resnet10(**kwargs):
     return ResNet(
-        BasicBlock,
-        [1, 1, 1, 1],
-        **kwargs
-    )
+        BasicBlock, [1, 1, 1, 1], **kwargs)
+
+def resnet18(**kwargs):
+    return ResNet(
+        BasicBlock, [2, 2, 2, 2], **kwargs)
 
 
 if __name__ == "__main__":
     from thanos.model.utils import count_parameters
     import time
-    backbone = resnet10(
-        skip_last_activation=True
-    )
+    backbone = resnet10()
     print(count_parameters(backbone))
     x = torch.rand(8, 3, 640, 480)
     t = time.time()

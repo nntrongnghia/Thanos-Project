@@ -82,7 +82,7 @@ class MultiHeadAttention(nn.Module):
     Multi-head attention layer with Dropout and Layer Normalization.
     """
 
-    def __init__(self, d_model, d_k, d_v, h, dff=2048, dropout=.1):
+    def __init__(self, d_model, d_k, d_v, h, dff=512, dropout=.1):
         super(MultiHeadAttention, self).__init__()
 
         self.attention = ScaledDotProductAttention(d_model=d_model, d_k=d_k, d_v=d_v, h=h)
@@ -102,7 +102,7 @@ class MultiHeadAttention(nn.Module):
         return self.layer_norm(queries + att)
 
 class EncoderSelfAttention(nn.Module):
-    def __init__(self, d_model, d_k, d_v, n_head, dff=2048, dropout_transformer=.1, n_module=6):
+    def __init__(self, d_model, d_k, d_v, n_head, dff=512, dropout_transformer=.1, n_module=6):
         super(EncoderSelfAttention, self).__init__()
         self.encoder = nn.ModuleList([MultiHeadAttention(d_model, d_k, d_v, n_head, dff, dropout_transformer)
                                       for _ in range(n_module)])
