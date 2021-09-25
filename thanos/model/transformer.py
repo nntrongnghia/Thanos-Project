@@ -107,7 +107,7 @@ class EncoderSelfAttention(nn.Module):
         self.encoder = nn.ModuleList([MultiHeadAttention(d_model, d_k, d_v, n_head, dff, dropout_transformer)
                                       for _ in range(n_module)])
     def forward(self, x):
-        in_encoder = x + sinusoid_encoding_table(x.shape[1], x.shape[2]).expand(x.shape).cuda()
+        in_encoder = x + sinusoid_encoding_table(x.shape[1], x.shape[2]).expand(x.shape)
         for l in self.encoder:
             in_encoder = l(in_encoder, in_encoder, in_encoder)
         return in_encoder

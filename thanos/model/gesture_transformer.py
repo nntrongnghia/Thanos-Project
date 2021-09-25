@@ -27,9 +27,9 @@ class GestureTransformer(nn.Module):
         x = x.flatten(1) # (B*T, 512)
         x = x.reshape(shape[0], shape[1], -1) # (B, T, 512)
 
-        # x = self.self_attention(x)
-        # x = self.pool(x).squeeze(dim=1)
-        # x = self.classifier(x)
+        x = self.self_attention(x)
+        x = self.pool(x).squeeze(dim=1)
+        x = self.classifier(x)
         return x
 
 def build_detector():
