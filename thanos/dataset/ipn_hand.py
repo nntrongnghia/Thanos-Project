@@ -10,8 +10,7 @@ from numpy.random import randint
 import numpy as np
 import random
 from tqdm import tqdm
-from thanos.dataset.spatial_transform import ToTensor
-
+import torchvision.transforms as T
 
 def pil_loader(path, modality):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
@@ -182,16 +181,10 @@ class IPN(data.Dataset):
         if self.temporal_transform is not None:
             frame_indices = self.temporal_transform(frame_indices)
         clip = self.loader(path, frame_indices, self.modality, self.sample_duration)
-        # oversample_clip =[]
+        clip = torch.stack([T.ToTensor()(img) for img in clip])
+        
         if self.spatial_transform is not None:
-            self.spatial_transform.randomize_parameters()
-            clip = [self.spatial_transform(img) for img in clip]
-        else:
-            clip = [ToTensor()(img) for img in clip]
-    
-        im_dim = clip[0].shape[-2:]
-        # clip = torch.cat(clip, 0).view((self.sample_duration, -1) + im_dim).permute(1, 0, 2, 3)
-        clip = torch.stack(clip)
+            clip = self.spatial_transform(clip)
      
         target = self.data[index]
         if self.target_transform is not None:
