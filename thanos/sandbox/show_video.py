@@ -1,6 +1,6 @@
 import cv2
 import os
-from dataset_config import IPN_HAND_ROOT
+from thanos.dataset_config import IPN_HAND_ROOT
 
 video_dir = os.path.join(IPN_HAND_ROOT, "videos")
 cap = cv2.VideoCapture(os.path.join(video_dir, "1CM1_1_R_#218.avi"))
