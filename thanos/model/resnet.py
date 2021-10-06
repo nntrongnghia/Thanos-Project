@@ -18,7 +18,8 @@ class ResNet(nn.Module):
         width_per_group: int = 64,
         replace_stride_with_dilation: Optional[List[bool]] = None,
         norm_layer: Optional[Callable[..., nn.Module]] = None,
-        skip_last_activation=False
+        skip_last_activation=False,
+        device=torch.device("cpu")
     ) -> None:
         super(ResNet, self).__init__()
         self.skip_last_activation = skip_last_activation
@@ -66,6 +67,9 @@ class ResNet(nn.Module):
                     nn.init.constant_(m.bn3.weight, 0)  # type: ignore[arg-type]
                 elif isinstance(m, BasicBlock):
                     nn.init.constant_(m.bn2.weight, 0)  # type: ignore[arg-type]
+
+        # self.device = device
+        # self.to(device)
 
     def _make_layer(self, block: Type[Union[BasicBlock, Bottleneck]], planes: int, blocks: int,
                     stride: int = 1, dilate: bool = False) -> nn.Sequential:

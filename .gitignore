@@ -2,3 +2,5 @@
 **.ipynb_checkpoints
 lightning_logs
 .vscode
+*.lprof
+*.prof
