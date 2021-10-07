@@ -8,6 +8,7 @@ from thanos.model.resnet import resnet10, resnet18
 from thanos.model.utils import count_parameters
 
 def trt_measure_inference_time(model, input_shape, N=10):
+    device = torch.device("cuda")
     print(f"=== Measure inference time on {device} ===")
     x = torch.rand(input_shape).cuda()
     # warm-up run

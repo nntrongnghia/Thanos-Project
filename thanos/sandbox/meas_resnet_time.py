@@ -32,14 +32,16 @@ def torch_measure_inference_time(model, input_shape, device=None, N=10):
 
 
 if __name__ == "__main__":
-    model = resnet10().eval()
-    print("=== Resnet 10 ===")
-    print(f"Resnet 10: {count_parameters(model):,d} params")
-    meas_time_ms = torch_measure_inference_time(model, (8, 3, 640, 480), N=5)
-    print(meas_time_ms)
-    model = resnet18().eval()
-    print("=== Resnet 18 ===")
-    print(f"Resnet 18: {count_parameters(model):,d} params")
-    meas_time_ms = torch_measure_inference_time(model, (8, 3, 640, 480), N=5)
-    print(meas_time_ms)
+    with torch.no_grad():
+        # model = resnet10().eval()
+        # print("=== Resnet 10 ===")
+        # print(f"Resnet 10: {count_parameters(model):,d} params")
+        # meas_time_ms = torch_measure_inference_time(model, (8, 3, 640, 480), N=10)
+        # print(meas_time_ms)
+
+        model = resnet18().eval()
+        print("=== Resnet 18 ===")
+        print(f"Resnet 18: {count_parameters(model):,d} params")
+        meas_time_ms = torch_measure_inference_time(model, (8, 3, 640, 480), N=5)
+        print(meas_time_ms)
 
