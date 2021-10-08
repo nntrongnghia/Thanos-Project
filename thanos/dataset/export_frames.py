@@ -7,9 +7,9 @@ from typing import List
 import os
 import cv2
 import numpy as np
-from thanos.dataset_config import IPN_HAND_ROOT
+from thanos.dataset import IPN_HAND_ROOT
 
-def get_video_names(dataset_root:str=IPN_HAND_ROOT) -> List[str]:
+def get_video_names(dataset_root:str) -> List[str]:
     video_dir = os.path.join(dataset_root, "videos")
     video_names = [name for name in os.listdir(video_dir) if name.endswith(".avi")]
     return video_names

@@ -3,8 +3,7 @@ import torch
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 
-from thanos.dataset_config import IPN_HAND_ROOT
-from thanos.dataset import IPN, binary_label_transform
+from thanos.dataset import IPN, binary_label_transform, IPN_HAND_ROOT
 from thanos.trainers.data_augmentation import (
     get_temporal_transform_fn, 
     get_train_spatial_transform_fn, 

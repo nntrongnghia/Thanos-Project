@@ -198,7 +198,7 @@ class IPN(data.Dataset):
 
 if __name__ == "__main__":
     import cv2
-    from thanos.dataset_config import IPN_HAND_ROOT
+    from thanos.dataset import IPN_HAND_ROOT
     from thanos.dataset.temporal_transform import TemporalRandomCrop
     import os
     ann_path = os.path.join(IPN_HAND_ROOT, "annotations", "ipnall.json")

@@ -4,8 +4,10 @@ import os
 import numpy as np
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
-from thanos.dataset_config import IPN_HAND_ROOT, INPUT_MEAN, INPUT_STD
-from thanos.dataset import IPN, binary_label_transform
+from thanos.dataset import (
+    IPN, binary_label_transform, 
+    IPN_HAND_ROOT, INPUT_MEAN, INPUT_STD)
+
 from thanos.trainers.data_augmentation import ( 
     get_temporal_transform_fn,
     get_train_spatial_transform_fn,
@@ -67,7 +69,7 @@ if __name__ == "__main__":
                     1, (1.0, 0, 0)
                 )
                 cv2.imshow("sequences", np_img)
-                cv2.waitKey(40)
+                cv2.waitKey(10)
             key = cv2.waitKey(0)
             if key == 27: # ESC key
                 cv2.destroyAllWindows

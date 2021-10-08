@@ -1,6 +1,5 @@
 import torchvision.transforms as T
-from thanos.dataset_config import INPUT_MEAN, INPUT_STD
-from thanos.dataset import TemporalRandomCrop
+from thanos.dataset import TemporalRandomCrop, INPUT_MEAN, INPUT_STD
 
 def get_train_spatial_transform_fn():
     return T.Compose([
