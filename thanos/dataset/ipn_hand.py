@@ -74,7 +74,7 @@ def get_video_names_and_annotations(data, subset):
 
 
 def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
-                 sample_duration):
+                 sample_duration, temporal_stride):
     data = load_annotation_data(annotation_path)
     video_names, annotations = get_video_names_and_annotations(data, subset)
     class_to_idx = get_class_labels(data)
@@ -107,7 +107,7 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
             sample['label'] = -1
 
         if n_samples_for_each_video == 1:
-            sample['frame_indices'] = list(range(begin_t, end_t + 1))
+            sample['frame_indices'] = list(range(begin_t, end_t + 1, temporal_stride))
             dataset.append(sample)
         else:
             if n_samples_for_each_video > 1:
@@ -119,7 +119,7 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
             for j in range(1, n_frames, step):
                 sample_j = copy.deepcopy(sample)
                 sample_j['frame_indices'] = list(
-                    range(j, min(n_frames + 1, j + sample_duration)))
+                    range(j, min(n_frames + 1, j + sample_duration), temporal_stride))
                 dataset.append(sample_j)
 
     return dataset, idx_to_class
@@ -147,22 +147,24 @@ class IPN(data.Dataset):
                  annotation_path,
                  subset,
                  n_samples_for_each_video=1,
+                 sample_duration=16,
+                 temporal_stride=1,
                  spatial_transform=None,
                  temporal_transform=None,
                  target_transform=None,
-                 sample_duration=16,
                  modality='RGB',
                  get_loader=get_default_video_loader):
         assert subset in ["training", "validation"]
         self.data, self.class_names = make_dataset(
             root_path, annotation_path, subset, n_samples_for_each_video,
-            sample_duration)
+            sample_duration, temporal_stride)
 
         self.spatial_transform = spatial_transform
         self.temporal_transform = temporal_transform
         self.target_transform = target_transform
         self.modality = modality
         self.sample_duration = sample_duration
+        self.temporal_stride = temporal_stride
         self.loader = get_loader()
 
     def __getitem__(self, index):
@@ -203,7 +205,8 @@ if __name__ == "__main__":
     import os
     ann_path = os.path.join(IPN_HAND_ROOT, "annotations", "ipnall.json")
     ipn = IPN(IPN_HAND_ROOT, ann_path, "training", 
-        temporal_transform=TemporalRandomCrop(16)
+        # temporal_transform=TemporalRandomCrop(16),
+        temporal_stride=2
     )
     for sequences, target in ipn:
         label = target["label"]
