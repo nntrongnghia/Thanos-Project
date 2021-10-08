@@ -141,7 +141,7 @@ class IPN(data.Dataset):
         class_to_idx (dict): Dict with items (class_name, class_index).
         imgs (list): List of (image path, class_index) tuples
     """
-
+    NUM_CLASSES = 14
     def __init__(self,
                  root_path,
                  annotation_path,
@@ -190,7 +190,7 @@ class IPN(data.Dataset):
      
         target = self.data[index]
         if self.target_transform is not None:
-            target = self.target_transform(target)
+            target = self.target_transform(target, num_classes=self.NUM_CLASSES)
 
         return clip, target
 

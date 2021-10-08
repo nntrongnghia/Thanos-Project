@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as T
 from thanos.dataset import (
     IPN, binary_label_transform, read_label_from_target_dict,
+    one_hot_label_transform,
     IPN_HAND_ROOT, INPUT_MEAN, INPUT_STD)
 
 from thanos.trainers.data_augmentation import ( 
@@ -29,7 +30,7 @@ if __name__ == "__main__":
         temporal_stride=2,
         spatial_transform=get_train_spatial_transform_fn(), 
         temporal_transform=get_temporal_transform_fn(20),
-        target_transform=read_label_from_target_dict
+        target_transform=one_hot_label_transform
     )
     dataloader = DataLoader(ipn, batch_size=8, shuffle=True)
     # ipn = IPN(IPN_HAND_ROOT, ann_path, "validation",
@@ -56,7 +57,9 @@ if __name__ == "__main__":
     key = 0
     for batch, targets in dataloader:
         print(batch.shape)
-        # print(targets)
+        print(targets)
+        print(targets.shape)
+        break
         for b in range(batch.shape[0]):
             sequences = batch[b]
             target = targets[b]

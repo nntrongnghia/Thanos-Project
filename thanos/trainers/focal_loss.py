@@ -7,7 +7,7 @@ def sigmoid_focal_loss(inputs:torch.Tensor, targets:torch.Tensor, alpha: float =
     Parameters
     ----------
     inputs : torch.Tensor
-        The predictions for each example.
+        The logits predictions for each example.
     targets : torch.Tensor
         A float tensor with the same shape as inputs. Stores the binary
         classification label for each element in inputs

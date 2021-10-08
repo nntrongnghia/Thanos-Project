@@ -1,19 +1,18 @@
 import torch
 import torch.nn.functional as F
 import pytorch_lightning as pl
-from thanos.model import GestureDetector
+from thanos.model import GestureTransformer
 from thanos.trainers.focal_loss import sigmoid_focal_loss
 
 def criterion(probs, labels):
-    labels = labels[..., None].to(torch.float)
+    labels = labels.to(torch.float)
     loss = sigmoid_focal_loss(probs, labels)
     return loss
 
-class LitDetector(pl.LightningModule):
+class LitGestureTransformer(pl.LightningModule):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.model = GestureDetector()
-        self.class_weight = [1, 3] # [no gesture, gesture]
+        self.model = GestureTransformer()
 
     def forward(self, x):
         return self.model(x)
