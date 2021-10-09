@@ -5,3 +5,5 @@ lightning_logs
 *.lprof
 *.prof
 dataset_config.json
+wandb
+GestureTransformer

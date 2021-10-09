@@ -5,9 +5,10 @@ from thanos.model import GestureTransformer
 from thanos.trainers.focal_loss import sigmoid_focal_loss
 from thanos.trainers.config import BaseTrainConfig
 
-def criterion(probs, labels):
+def criterion(probs, labels, class_weights=None):
     labels = labels.to(torch.float)
-    loss = sigmoid_focal_loss(probs, labels)
+    # loss = sigmoid_focal_loss(probs, labels)*probs.shape[-1]
+    loss = F.binary_cross_entropy_with_logits(probs, labels, class_weights)
     return loss
 
 class LitGestureTransformer(pl.LightningModule):
@@ -22,18 +23,19 @@ class LitGestureTransformer(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         sequences, labels = batch
         logits = self.model(sequences)
-        loss = criterion(logits, labels)
+        loss = criterion(logits, labels, self.config.class_weights)
+        self.log("train/sigmoid_focal_loss", loss)
         return loss
 
     def validation_step(self, batch, batch_idx):
         sequences, labels = batch
         logits = self.model(sequences)
-        loss = criterion(logits, labels)
+        loss = criterion(logits, labels, self.config.class_weights)
+        self.log("val/sigmoid_focal_loss", loss)
         return loss
 
     def configure_optimizers(self):
-        train_config = self.config.train_config()
-        lr = train_config["lr"]
+        lr = self.config.lr
         if isinstance(lr, float):
             return torch.optim.Adam(self.model.parameters(), lr=lr)
         else:

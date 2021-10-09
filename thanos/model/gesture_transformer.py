@@ -1,4 +1,5 @@
 import torch
+import torchvision
 import torch.nn as nn
 from thanos.model.transformer import EncoderSelfAttention
 from thanos.model.resnet import resnet10, resnet18

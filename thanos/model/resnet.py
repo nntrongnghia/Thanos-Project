@@ -7,7 +7,6 @@ from typing import Type, Any, Callable, Union, List, Optional
 
 
 class ResNet(nn.Module):
-
     def __init__(
         self,
         block: Type[Union[BasicBlock, Bottleneck]],
@@ -118,8 +117,10 @@ def resnet10(**kwargs):
         BasicBlock, [1, 1, 1, 1], **kwargs)
 
 def resnet18(**kwargs):
-    return ResNet(
-        BasicBlock, [2, 2, 2, 2], **kwargs)
+    model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
+    pretrained_resnet18 = torchvision.models.resnet18(pretrained=True)
+    model.load_state_dict(pretrained_resnet18.state_dict(), strict=False)
+    return model
 
 
 if __name__ == "__main__":

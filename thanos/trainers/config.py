@@ -7,7 +7,8 @@ import importlib
 import os
 
 class BaseTrainConfig(ABC):
-    
+    PROJECT_NAME = ""
+    EXPE_NAME = ""
     @abstractmethod
     def model_config(self) -> Dict:
         """Return a dict which will be passed to model constructor"""
@@ -24,12 +25,12 @@ class BaseTrainConfig(ABC):
         pass
 
     @abstractmethod
-    def train_config(self) -> Dict:
+    def trainer_config(self) -> Dict:
         """Return a dict which will be passed to Lightning Module constructor"""
         pass
 
         
-def load_config(config_path):
+def load_config(config_path) -> BaseTrainConfig:
     """
     Parameters
     ----------
