@@ -19,7 +19,7 @@ class DefaultConfig(BaseTrainConfig):
         self.logger = WandbLogger(
             name="{}_{:%B-%d-%Y-%Hh-%M}".format(self.EXPE_NAME, datetime.datetime.now()),
             project=self.PROJECT_NAME,
-            offline=True)
+            )
 
         # === train config ===
         self.accumulate_grad_batches = 4
@@ -61,7 +61,8 @@ class DefaultConfig(BaseTrainConfig):
             "vqk_dim": 128,
             "encoder_fc_dim": 256,
             "n_encoder_heads": 6,
-            "n_encoders": 6
+            "n_encoders": 6,
+            "return_aux": True
         }
     
 
@@ -70,7 +71,9 @@ class DefaultConfig(BaseTrainConfig):
             "accumulate_grad_batches": self.accumulate_grad_batches, 
             "logger": self.logger,
             "gpus": 1,
-            "log_every_n_steps": 20
+            "log_every_n_steps": 20,
+            "track_grad_norm": 2,
+            "gradient_clip_val": 1.0
         }
 
     def criterion_config(self):
