@@ -29,6 +29,14 @@ class BaseTrainConfig(ABC):
         """Return a dict which will be passed to Lightning Module constructor"""
         pass
 
+    @abstractmethod
+    def criterion_config(self) -> Dict:
+        """Return a dict which will be passed to Criterion constructor"""
+        pass
+
+
+
+
         
 def load_config(config_path) -> BaseTrainConfig:
     """

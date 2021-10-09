@@ -18,7 +18,8 @@ class DefaultConfig(BaseTrainConfig):
         self.config_path = __file__
         self.logger = WandbLogger(
             name="{}_{:%B-%d-%Y-%Hh-%M}".format(self.EXPE_NAME, datetime.datetime.now()),
-            project=self.PROJECT_NAME)
+            project=self.PROJECT_NAME,
+            offline=True)
 
         # === train config ===
         self.accumulate_grad_batches = 4
@@ -32,6 +33,7 @@ class DefaultConfig(BaseTrainConfig):
         )
 
         # === Dataset ===
+        self.num_classes = 14
         self.input_duration = 22 # frames
         self.temporal_stride = 2
         self.ann_path = os.path.join(IPN_HAND_ROOT, "annotations", "ipnall.json")
@@ -54,7 +56,7 @@ class DefaultConfig(BaseTrainConfig):
     def model_config(self):
         return {
             "backbone": "resnet18",
-            "num_classes": 14,
+            "num_classes": self.num_classes,
             "encoder_dim": 256,
             "vqk_dim": 128,
             "encoder_fc_dim": 256,
@@ -67,7 +69,14 @@ class DefaultConfig(BaseTrainConfig):
         return {
             "accumulate_grad_batches": self.accumulate_grad_batches, 
             "logger": self.logger,
-            "gpus": 1
+            "gpus": 1,
+            "log_every_n_steps": 20
+        }
+
+    def criterion_config(self):
+        return {
+            "num_classes": self.num_classes,
+            "class_weights": self.class_weights
         }
 
     def train_dataloader(self):

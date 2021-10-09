@@ -102,12 +102,19 @@ class MultiHeadAttention(nn.Module):
         return self.layer_norm(queries + att)
 
 class EncoderSelfAttention(nn.Module):
-    def __init__(self, d_model, d_k, d_v, n_head, dff=512, dropout_transformer=.1, n_module=6):
+    def __init__(self, d_model, d_k, d_v, n_head, dff=512, dropout_transformer=.1, n_module=6, return_aux=False):
         super(EncoderSelfAttention, self).__init__()
+        self.return_aux = return_aux
         self.encoder = nn.ModuleList([MultiHeadAttention(d_model, d_k, d_v, n_head, dff, dropout_transformer)
                                       for _ in range(n_module)])
     def forward(self, x):
         in_encoder = x + sinusoid_encoding_table(x.shape[1], x.shape[2]).expand(x.shape).to(x.device)
+        aux_outputs = []
         for l in self.encoder:
             in_encoder = l(in_encoder, in_encoder, in_encoder)
-        return in_encoder
+            if self.return_aux:
+                aux_outputs.append(in_encoder)
+        if self.return_aux:
+            return torch.stack(aux_outputs)
+        else:
+            return in_encoder

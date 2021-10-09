@@ -22,15 +22,17 @@ class GestureTransformer(nn.Module):
         encoder_fc_dim=256,
         n_encoder_heads=6, 
         n_encoders=6, 
+        return_aux=False,
         **kwargs):
 
         super().__init__()
+        self.return_aux = return_aux
         self.backbone = build_resnet_fn_dict[backbone]()
         self.conv_proj = nn.Conv2d(512, encoder_dim, 1)
         self.ft_map_avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.self_attention = EncoderSelfAttention(
             encoder_dim, vqk_dim, vqk_dim, dff=encoder_fc_dim,
-            n_head=n_encoder_heads, n_module=n_encoders,**kwargs)
+            n_head=n_encoder_heads, n_module=n_encoders, return_aux=return_aux,**kwargs)
         self.pool = nn.AdaptiveAvgPool2d((1, encoder_dim))
         self.classifier = nn.Linear(encoder_dim, num_classes)
 
@@ -44,10 +46,21 @@ class GestureTransformer(nn.Module):
         x = x.flatten(start_dim=1) # (B*T, encoder_dim)
         x = x.reshape(shape[0], shape[1], -1) # (B, T, encoder_dim)
 
-        x = self.self_attention(x) # (B, T, encoder_dim)
-        x = self.pool(x).squeeze(dim=1) # (B, encoder dim)
-        x = self.classifier(x) # (B, num_classes)
-        return x
+        if self.return_aux:
+            x = self.self_attention(x) # (nb_encoders, B, T, encoder_dim)
+            logits = self.classifier(
+                self.pool(x[-1]).squeeze(dim=1))
+            aux = []
+            for i in range(x.shape[0]-1):
+                aux_logits = self.classifier(
+                    self.pool(x[i]).squeeze(dim=1))
+                aux.append(aux_logits)
+            return {"logits": logits, "aux": aux}
+        else:
+            x = self.self_attention(x) # (B, T, encoder_dim)
+            x = self.pool(x).squeeze(dim=1) # (B, encoder dim)
+            x = self.classifier(x) # (B, num_classes)
+            return {"logits": x}
 
     def inference(self, x, threshold=0.5):
         with torch.no_grad():
@@ -64,4 +77,4 @@ if __name__ == "__main__":
     print("detector encoder:", count_parameters(detector.self_attention))
     x = torch.rand(2, 16, 3, 240, 320)
     out = detector(x)
-    print(out.shape)
+    print(out["logits"].shape)
