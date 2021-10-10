@@ -4,3 +4,4 @@ tqdm
 pytorch-lightning
 wandb
 sklearn
+plotly

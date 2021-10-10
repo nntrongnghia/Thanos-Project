@@ -4,6 +4,7 @@ import torch
 from pytorch_lightning.loggers import WandbLogger
 from torch.utils.data import DataLoader
 from thanos.trainers import BaseTrainConfig
+from pytorch_lightning.callbacks import ModelCheckpoint
 from thanos.dataset import IPN, IPN_HAND_ROOT, one_hot_label_transform
 from thanos.trainers.data_augmentation import (
     get_temporal_transform_fn, 
@@ -17,14 +18,20 @@ class DefaultConfig(BaseTrainConfig):
 
     def __init__(self):
         self.config_path = __file__
+        self.expe_name = "{}_{:%B-%d-%Y-%Hh-%M}".format(self.EXPE_NAME, datetime.datetime.now())
         self.logger = WandbLogger(
-            name="{}_{:%B-%d-%Y-%Hh-%M}".format(self.EXPE_NAME, datetime.datetime.now()),
+            name=self.expe_name,
             project=self.PROJECT_NAME,
             # offline=True # for debug
             )
 
         # === train config ===
         self.lr_monitor = LearningRateMonitor(logging_interval='step')
+        self.checkpoint_callback = ModelCheckpoint(
+            monitor="val/total_loss",
+            save_top_k=3)
+        self.callbacks = [self.lr_monitor, self.checkpoint_callback]
+        self.default_root_dir = os.path.join(os.getcwd(), self.PROJECT_NAME, self.expe_name)
         self.accumulate_grad_batches = 4
         self.batch_size = 4
         self.lr = 1e-4
@@ -76,9 +83,10 @@ class DefaultConfig(BaseTrainConfig):
             "gpus": 1,
             "log_every_n_steps": 20,
             "gradient_clip_val": 1.0,
-            "callbacks": [self.lr_monitor]
+            "callbacks": self.callbacks,
+            "default_root_dir": self.default_root_dir,
             # "track_grad_norm": 2, # for debug
-            # "limit_train_batches": 0.02 # for debug
+            "limit_train_batches": 0.02 # for debug
         }
 
     def criterion_config(self):

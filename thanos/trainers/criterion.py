@@ -44,6 +44,7 @@ class Criterion(nn.Module):
                 loss = F.binary_cross_entropy_with_logits(aux_logits, onehot_labels, self.class_weights)
                 total_loss += loss
                 data["BCE_loss_" + str(i)] = loss.item()
+        data["total_loss"] = total_loss.item()
         # === Metrics ===
         if validation:
             preds = torch.argmax(logits, dim=-1)

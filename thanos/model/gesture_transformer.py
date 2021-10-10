@@ -26,6 +26,7 @@ class GestureTransformer(nn.Module):
         **kwargs):
 
         super().__init__()
+        self.num_classes = num_classes
         self.return_aux = return_aux
         self.backbone = build_resnet_fn_dict[backbone]()
         self.conv_proj = nn.Conv2d(512, encoder_dim, 1)
