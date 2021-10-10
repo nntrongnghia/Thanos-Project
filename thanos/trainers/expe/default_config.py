@@ -39,7 +39,7 @@ class DefaultConfig(BaseTrainConfig):
             [1.0, 1.5, 1.5, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
             device=torch.device("cuda"))
         self.lr = 1e-4
-        self.lr_scheduler_fn = lambda optimizer: torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[5, 20], gamma=0.1)
+        self.lr_scheduler_fn = lambda optimizer: torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[5, 12], gamma=0.1)
         # === Dataset ===
         self.num_classes = 14
         self.class_names = IPN.CLASSES
