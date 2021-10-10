@@ -142,6 +142,9 @@ class IPN(data.Dataset):
         imgs (list): List of (image path, class_index) tuples
     """
     NUM_CLASSES = 14
+    CLASSES = ["D0X", "B0A", "B0B", "G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09", "G10", "G11"]
+
+
     def __init__(self,
                  root_path,
                  annotation_path,

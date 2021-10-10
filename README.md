@@ -14,3 +14,12 @@ pip install -r requirements.txt
 - Add this repo in your PYTHONPATH
 - Create `dataset_config.json` with:
     - "ipn": "path/to/ipn/root"
+
+# Training
+```
+python thanos\trainers\train_on_ipn.py CONFIG_PATH
+```
+Example
+```
+python thanos\trainers\train_on_ipn.py thanos\trainers\expe\default_config.py
+```

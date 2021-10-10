@@ -9,6 +9,7 @@ from thanos.trainers.data_augmentation import (
     get_temporal_transform_fn, 
     get_train_spatial_transform_fn, 
     get_val_spatial_transform_fn)
+from pytorch_lightning.callbacks import LearningRateMonitor
 
 class DefaultConfig(BaseTrainConfig):
     PROJECT_NAME = "GestureTransformer"
@@ -19,21 +20,23 @@ class DefaultConfig(BaseTrainConfig):
         self.logger = WandbLogger(
             name="{}_{:%B-%d-%Y-%Hh-%M}".format(self.EXPE_NAME, datetime.datetime.now()),
             project=self.PROJECT_NAME,
+            # offline=True # for debug
             )
 
         # === train config ===
+        self.lr_monitor = LearningRateMonitor(logging_interval='step')
         self.accumulate_grad_batches = 4
         self.batch_size = 4
         self.lr = 1e-4
         self.class_weights = torch.tensor(
-            [0.1429, 0.2000, 0.2000, 1.0000, 
-            1.0000, 1.0000, 1.0000, 1.0000, 1.0000,
-            1.0000, 1.0000, 1.0000, 1.0000, 1.0000],
+            # [7.0, 5.0, 5.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            [1.0, 1.5, 1.5, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
             device=torch.device("cuda")
         )
 
         # === Dataset ===
         self.num_classes = 14
+        self.class_names = IPN.CLASSES
         self.input_duration = 22 # frames
         self.temporal_stride = 2
         self.ann_path = os.path.join(IPN_HAND_ROOT, "annotations", "ipnall.json")
@@ -43,12 +46,12 @@ class DefaultConfig(BaseTrainConfig):
             temporal_transform=get_temporal_transform_fn(self.input_duration),
             target_transform=one_hot_label_transform,
             sample_duration=self.temporal_stride*self.input_duration,
-            n_samples_for_each_video=2
+            n_samples_for_each_video=1
             )
         self.val_ipn = IPN(IPN_HAND_ROOT, self.ann_path, "validation",
             temporal_stride=self.temporal_stride,
             spatial_transform=get_val_spatial_transform_fn(), 
-            temporal_transform=get_temporal_transform_fn(self.input_duration),
+            temporal_transform=get_temporal_transform_fn(self.input_duration, training=False),
             target_transform=one_hot_label_transform)
 
         # save this config file to wandb cloud
@@ -57,10 +60,10 @@ class DefaultConfig(BaseTrainConfig):
         return {
             "backbone": "resnet18",
             "num_classes": self.num_classes,
-            "encoder_dim": 256,
-            "vqk_dim": 128,
-            "encoder_fc_dim": 256,
-            "n_encoder_heads": 6,
+            "encoder_dim": 512,
+            "vqk_dim": 64,
+            "encoder_fc_dim": 512,
+            "n_encoder_heads": 8,
             "n_encoders": 6,
             "return_aux": True
         }
@@ -72,8 +75,10 @@ class DefaultConfig(BaseTrainConfig):
             "logger": self.logger,
             "gpus": 1,
             "log_every_n_steps": 20,
-            "track_grad_norm": 2,
-            "gradient_clip_val": 1.0
+            "gradient_clip_val": 1.0,
+            "callbacks": [self.lr_monitor]
+            # "track_grad_norm": 2, # for debug
+            # "limit_train_batches": 0.02 # for debug
         }
 
     def criterion_config(self):
@@ -83,9 +88,9 @@ class DefaultConfig(BaseTrainConfig):
         }
 
     def train_dataloader(self):
-        return DataLoader(self.train_ipn, batch_size=self.batch_size, shuffle=True, num_workers=2)
+        return DataLoader(self.train_ipn, batch_size=self.batch_size, shuffle=True, num_workers=1)
 
     def val_dataloader(self):
-        return DataLoader(self.val_ipn, batch_size=self.batch_size, shuffle=False, num_workers=2)
+        return DataLoader(self.val_ipn, batch_size=self.batch_size, shuffle=False, num_workers=1)
 
 config = DefaultConfig()
