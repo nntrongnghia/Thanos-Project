@@ -8,12 +8,6 @@ class Criterion(nn.Module):
         super().__init__()
         self.num_classes = num_classes
         self.class_weights = class_weights
-        self.val_labels = []
-        self.val_preds = []
-
-    def clear_validation_buffers(self):
-        self.val_labels = []
-        self.val_preds = []
 
 
     def forward(self, m_outputs, onehot_labels, validation=False):
@@ -45,10 +39,4 @@ class Criterion(nn.Module):
                 total_loss += loss
                 data["BCE_loss_" + str(i)] = loss.item()
         data["total_loss"] = total_loss.item()
-        # === Metrics ===
-        if validation:
-            preds = torch.argmax(logits, dim=-1)
-            labels = torch.argmax(onehot_labels, dim=-1)
-            self.val_preds.append(preds)
-            self.val_labels.append(labels)
         return total_loss, data

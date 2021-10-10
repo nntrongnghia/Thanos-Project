@@ -34,13 +34,12 @@ class DefaultConfig(BaseTrainConfig):
         self.default_root_dir = os.path.join(os.getcwd(), self.PROJECT_NAME, self.expe_name)
         self.accumulate_grad_batches = 4
         self.batch_size = 4
-        self.lr = 1e-4
         self.class_weights = torch.tensor(
             # [7.0, 5.0, 5.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
             [1.0, 1.5, 1.5, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
-            device=torch.device("cuda")
-        )
-
+            device=torch.device("cuda"))
+        self.lr = 1e-4
+        self.lr_scheduler_fn = lambda optimizer: torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[5, 20], gamma=0.1)
         # === Dataset ===
         self.num_classes = 14
         self.class_names = IPN.CLASSES
@@ -86,7 +85,7 @@ class DefaultConfig(BaseTrainConfig):
             "callbacks": self.callbacks,
             "default_root_dir": self.default_root_dir,
             # "track_grad_norm": 2, # for debug
-            "limit_train_batches": 0.02 # for debug
+            # "limit_train_batches": 0.05 # for debug
         }
 
     def criterion_config(self):
@@ -96,7 +95,7 @@ class DefaultConfig(BaseTrainConfig):
         }
 
     def train_dataloader(self):
-        return DataLoader(self.train_ipn, batch_size=self.batch_size, shuffle=True, num_workers=1)
+        return DataLoader(self.train_ipn, batch_size=self.batch_size, shuffle=True, num_workers=2)
 
     def val_dataloader(self):
         return DataLoader(self.val_ipn, batch_size=self.batch_size, shuffle=False, num_workers=1)
