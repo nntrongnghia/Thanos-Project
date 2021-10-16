@@ -1,14 +1,13 @@
-import time
-import torch
-import os
-import pytorch_lightning as pl
 import argparse
+import os
+import time
+
+import pytorch_lightning as pl
 import tensorrt as trt
-from torch2trt import torch2trt
-
-from thanos.trainers.lit_detector import LitGestureTransformer
+import torch
 from thanos.trainers import load_config
-
+from thanos.trainers.lit_detector import LitGestureTransformer
+from torch2trt import torch2trt
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

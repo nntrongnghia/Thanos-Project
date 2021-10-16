@@ -143,7 +143,38 @@ class IPN(data.Dataset):
     """
     NUM_CLASSES = 14
     CLASSES = ["D0X", "B0A", "B0B", "G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09", "G10", "G11"]
-
+    CLASS_NAME_DICT = {
+        "D0X": "Non-gesture", 
+        "B0A": "Point w one finger", 
+        "B0B": "Point w two fingers",
+        "G01": "Click w one finger", 
+        "G02": "Click w two fingers", 
+        "G03": "Throw up", 
+        "G04": "Throw down", 
+        "G05": "Throw left", 
+        "G06": "Throw right", 
+        "G07": "Open twice", 
+        "G08": "Double click w one finger", 
+        "G09": "Double click w two fingers", 
+        "G10": "Zoom in", 
+        "G11": "Zoom out"
+    }
+    ID_NAME_DICT = {
+        0 : "Non-gesture", 
+        1 : "Point w one finger", 
+        2 : "Point w two fingers",
+        3 : "Click w one finger", 
+        4 : "Click w two fingers", 
+        5 : "Throw up", 
+        6 : "Throw down", 
+        7 : "Throw left", 
+        8 : "Throw right", 
+        9 : "Open twice", 
+        10 : "Double click w one finger", 
+        11 : "Double click w two fingers", 
+        12 : "Zoom in", 
+        13 : "Zoom out"
+    }
 
     def __init__(self,
                  root_path,

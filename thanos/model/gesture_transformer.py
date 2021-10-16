@@ -1,8 +1,8 @@
 import torch
-import torchvision
 import torch.nn as nn
-from thanos.model.transformer import EncoderSelfAttention
+import torchvision
 from thanos.model.resnet import resnet10, resnet18
+from thanos.model.transformer import EncoderSelfAttention
 
 build_resnet_fn_dict = {
     "resnet10": resnet10,
@@ -68,13 +68,15 @@ class GestureTransformer(nn.Module):
             x = self.classifier(x) # (B, num_classes)
             return {"logits": x}
 
-    def inference(self, x, threshold=0.5):
-        with torch.no_grad():
-            probs = self.forward(x).sigmoid()
-            pred_cls = (probs > threshold).to(torch.int)
-        return pred_cls
 
+@torch.no_grad()
+def classification_inference(logits:torch.Tensor, return_prob=False) -> torch.Tensor:
+    if return_prob:
+        return logits.argmax(dim=-1), logits.sigmoid()
+    else:
+        return logits.argmax(dim=-1)
 
+        
 if __name__ == "__main__":
     from thanos.model.utils import count_parameters
     detector = GestureTransformer(encoder_dim=512, seq_len=20)

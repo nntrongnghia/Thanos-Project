@@ -1,16 +1,16 @@
-import os
 import datetime
+import os
+
 import torch
+from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
-from torch.utils.data import DataLoader
-from thanos.trainers import BaseTrainConfig
-from pytorch_lightning.callbacks import ModelCheckpoint
 from thanos.dataset import IPN, IPN_HAND_ROOT, one_hot_label_transform
-from thanos.trainers.data_augmentation import (
-    get_temporal_transform_fn, 
-    get_train_spatial_transform_fn, 
-    get_val_spatial_transform_fn)
-from pytorch_lightning.callbacks import LearningRateMonitor
+from thanos.trainers import BaseTrainConfig
+from thanos.trainers.data_augmentation import (get_temporal_transform_fn,
+                                               get_train_spatial_transform_fn,
+                                               get_val_spatial_transform_fn)
+from torch.utils.data import DataLoader
+
 
 class DefaultConfig(BaseTrainConfig):
     PROJECT_NAME = "GestureTransformer"
