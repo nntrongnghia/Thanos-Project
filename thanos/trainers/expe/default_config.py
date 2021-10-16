@@ -46,19 +46,8 @@ class DefaultConfig(BaseTrainConfig):
         self.input_duration = 22 # frames
         self.temporal_stride = 2
         self.ann_path = os.path.join(IPN_HAND_ROOT, "annotations", "ipnall.json")
-        self.train_ipn = IPN(IPN_HAND_ROOT, self.ann_path, "training",
-            temporal_stride=self.temporal_stride,
-            spatial_transform=get_train_spatial_transform_fn(), 
-            temporal_transform=get_temporal_transform_fn(self.input_duration),
-            target_transform=one_hot_label_transform,
-            sample_duration=self.temporal_stride*self.input_duration,
-            n_samples_for_each_video=1
-            )
-        self.val_ipn = IPN(IPN_HAND_ROOT, self.ann_path, "validation",
-            temporal_stride=self.temporal_stride,
-            spatial_transform=get_val_spatial_transform_fn(), 
-            temporal_transform=get_temporal_transform_fn(self.input_duration, training=False),
-            target_transform=one_hot_label_transform)
+        
+        
 
         # save this config file to wandb cloud
 
@@ -71,7 +60,8 @@ class DefaultConfig(BaseTrainConfig):
             "encoder_fc_dim": 512,
             "n_encoder_heads": 8,
             "n_encoders": 6,
-            "return_aux": True
+            "return_aux": True,
+            "seq_len": self.input_duration
         }
     
 
@@ -95,9 +85,21 @@ class DefaultConfig(BaseTrainConfig):
         }
 
     def train_dataloader(self):
+        self.train_ipn = IPN(IPN_HAND_ROOT, self.ann_path, "training",
+            temporal_stride=self.temporal_stride,
+            spatial_transform=get_train_spatial_transform_fn(), 
+            temporal_transform=get_temporal_transform_fn(self.input_duration),
+            target_transform=one_hot_label_transform,
+            sample_duration=self.temporal_stride*self.input_duration,
+            n_samples_for_each_video=1)
         return DataLoader(self.train_ipn, batch_size=self.batch_size, shuffle=True, num_workers=2)
 
     def val_dataloader(self):
-        return DataLoader(self.val_ipn, batch_size=self.batch_size, shuffle=False, num_workers=1)
+        self.val_ipn = IPN(IPN_HAND_ROOT, self.ann_path, "validation",
+            temporal_stride=self.temporal_stride,
+            spatial_transform=get_val_spatial_transform_fn(), 
+            temporal_transform=get_temporal_transform_fn(self.input_duration, training=False),
+            target_transform=one_hot_label_transform)
+        return DataLoader(self.val_ipn, batch_size=self.batch_size//2, shuffle=False, num_workers=1)
 
 config = DefaultConfig()

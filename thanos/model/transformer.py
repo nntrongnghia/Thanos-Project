@@ -20,6 +20,8 @@ def sinusoid_encoding_table(max_len, d_model):
     out = position_embedding(pos, d_model)
     return out
 
+
+
 class ScaledDotProductAttention(nn.Module):
     """
     Scaled dot-product attention
@@ -71,7 +73,7 @@ class ScaledDotProductAttention(nn.Module):
 
         att = torch.matmul(q, k) / np.sqrt(self.d_k)  # (b_s, h, nq, nk)
 
-        att = torch.softmax(att, -1)
+        att = torch.nn.functional.softmax(att, -1)
 
         out = torch.matmul(att, v).permute(0, 2, 1, 3).contiguous().view(b_s, nq, self.h * self.d_v)  # (b_s, nq, h*d_v)
         out = self.fc_o(out)  # (b_s, nq, d_model)
@@ -102,13 +104,15 @@ class MultiHeadAttention(nn.Module):
         return self.layer_norm(queries + att)
 
 class EncoderSelfAttention(nn.Module):
-    def __init__(self, d_model, d_k, d_v, n_head, dff=512, dropout_transformer=.1, n_module=6, return_aux=False):
+    def __init__(self, d_model, d_k, d_v, n_head, dff=512, dropout_transformer=.1, n_module=6, return_aux=False, seq_len=22):
         super(EncoderSelfAttention, self).__init__()
         self.return_aux = return_aux
         self.encoder = nn.ModuleList([MultiHeadAttention(d_model, d_k, d_v, n_head, dff, dropout_transformer)
                                       for _ in range(n_module)])
+        self.pos_embedding_table = sinusoid_encoding_table(seq_len, d_model)
     def forward(self, x):
-        in_encoder = x + sinusoid_encoding_table(x.shape[1], x.shape[2]).expand(x.shape).to(x.device)
+        # in_encoder = x + sinusoid_encoding_table(x.shape[1], x.shape[2]).expand(x.shape).to(x.device)
+        in_encoder = x + self.pos_embedding_table.expand(x.shape).to(x.device)
         aux_outputs = []
         for l in self.encoder:
             in_encoder = l(in_encoder, in_encoder, in_encoder)

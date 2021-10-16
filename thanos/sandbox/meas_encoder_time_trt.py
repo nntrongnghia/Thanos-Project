@@ -4,6 +4,7 @@ import torch
 from torch2trt import torch2trt
 import time
 from tqdm import tqdm
+import tensorrt as trt
 
 from thanos.model.transformer import EncoderSelfAttention
 from thanos.model.utils import count_parameters
@@ -32,10 +33,10 @@ def trt_measure_inference_time(model, input_shape, N=10):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--encoder_dim", type=int, default=256)
-    parser.add_argument("--att_dim", type=int, default=128)
-    parser.add_argument("--hidden_dim", type=int, default=256)
-    parser.add_argument("--nb_heads", type=int, default=6)
+    parser.add_argument("--encoder_dim", type=int, default=512)
+    parser.add_argument("--att_dim", type=int, default=64)
+    parser.add_argument("--hidden_dim", type=int, default=512)
+    parser.add_argument("--nb_heads", type=int, default=8)
     parser.add_argument("--nb_modules", type=int, default=6)
     args = parser.parse_args()
     
@@ -53,9 +54,21 @@ if __name__ == "__main__":
         n_head=args.nb_heads,
         dff=args.hidden_dim,
         n_module=args.nb_modules
-    ).eval()
-    trt_model = torch2trt(model, [torch.rand((1, 40, args.encoder_dim))])
+    ).eval().cuda()
+    x = torch.rand((1, 20, args.encoder_dim)).cuda()
     print(f"Encoder: {count_parameters(model):,d} params")
-    meas_time_ms = trt_measure_inference_time(model, (1, 40, args.encoder_dim), N=5)
+    trt_model = torch2trt(model, [x], 
+        fp16_mode=True, 
+        max_workspace_size=1<<30, 
+        use_onnx=True,
+        strict_type_constraints=True,
+        log_level=trt.Logger.INFO
+    )
+    meas_time_ms = trt_measure_inference_time(model, (1, 20, args.encoder_dim), N=10)
     print(meas_time_ms)
 
+    # for _ in range(10):
+    #     tic = time.time()
+    #     model(x)
+    #     toc = time.time()
+    #     print((toc - tic)*1000, "ms")

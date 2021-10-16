@@ -126,7 +126,7 @@ def resnet18(**kwargs):
 if __name__ == "__main__":
     from thanos.model.utils import count_parameters
     import time
-    backbone = resnet10()
+    backbone = resnet18()
     print(count_parameters(backbone))
     x = torch.rand(8, 3, 640, 480)
     t = time.time()

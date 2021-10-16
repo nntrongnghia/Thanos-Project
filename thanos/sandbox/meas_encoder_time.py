@@ -23,6 +23,7 @@ def torch_measure_inference_time(model, input_shape, device=None, N=10):
         tic = time.time()
         out = model(x)
         toc = time.time()
+        print((toc - tic)*1000)
         meas_time.append(toc - tic)
     meas_time_ms = np.array(meas_time) * 1000
 
@@ -35,10 +36,10 @@ def torch_measure_inference_time(model, input_shape, device=None, N=10):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--encoder_dim", type=int, default=256)
-    parser.add_argument("--att_dim", type=int, default=128)
-    parser.add_argument("--hidden_dim", type=int, default=256)
-    parser.add_argument("--nb_heads", type=int, default=6)
+    parser.add_argument("--encoder_dim", type=int, default=512)
+    parser.add_argument("--att_dim", type=int, default=64)
+    parser.add_argument("--hidden_dim", type=int, default=512)
+    parser.add_argument("--nb_heads", type=int, default=8)
     parser.add_argument("--nb_modules", type=int, default=6)
     args = parser.parse_args()
     
@@ -59,7 +60,7 @@ if __name__ == "__main__":
             n_module=args.nb_modules
         ).eval()
         print(f"Encoder: {count_parameters(model):,d} params")
-        meas_time_ms = torch_measure_inference_time(model, (1, 40, args.encoder_dim), N=5)
+        meas_time_ms = torch_measure_inference_time(model, (1, 20, args.encoder_dim), N=10)
         print(meas_time_ms)
 
 

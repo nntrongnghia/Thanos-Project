@@ -20,6 +20,7 @@ def trt_measure_inference_time(model, input_shape, N=10):
         tic = time.time()
         model(x)
         toc = time.time()
+        print((toc - tic)*1000, "ms")
         meas_time.append(toc - tic)
     meas_time_ms = np.array(meas_time) * 1000
 
@@ -31,19 +32,20 @@ def trt_measure_inference_time(model, input_shape, N=10):
 
 if __name__ == "__main__":
     device = torch.device("cuda")
-    print("=== Resnet 10 ===")
-    model = resnet10().eval().cuda()
-    x = torch.rand((2, 3, 640, 480)).cuda()
-    model_trt = torch2trt(model, [x], max_batch_size=2)
-    print(f"Gesture Detector: {count_parameters(model):,d} params")
-    meas_time_ms = trt_measure_inference_time(model_trt, (2, 3, 640, 480), N=5)
-    print(meas_time_ms)
+    # print("=== Resnet 10 ===")
+    # model = resnet10().eval().cuda()
+    # x = torch.rand((2, 3, 240, 240)).cuda()
+    # model_trt = torch2trt(model, [x], max_batch_size=2)
+    # print(f"Gesture Detector: {count_parameters(model):,d} params")
+    # meas_time_ms = trt_measure_inference_time(model_trt, (2, 3, 640, 480), N=5)
+    # print(meas_time_ms)
 
     print("=== Resnet 18 ===")
+    test_shape = (20, 3, 240, 240)
     model = resnet18().eval().cuda()
-    x = torch.rand((2, 3, 640, 480)).cuda()
-    model_trt = torch2trt(model, [x], max_batch_size=2)
+    x = torch.rand(test_shape).cuda()
+    model_trt = torch2trt(model, [x], max_batch_size=test_shape[0])
     print(f"Gesture Detector: {count_parameters(model):,d} params")
-    meas_time_ms = trt_measure_inference_time(model_trt, (2, 3, 640, 480), N=5)
+    meas_time_ms = trt_measure_inference_time(model_trt, test_shape, N=10)
     print(meas_time_ms)
 

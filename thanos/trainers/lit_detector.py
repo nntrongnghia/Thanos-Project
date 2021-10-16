@@ -3,6 +3,7 @@ import wandb
 import torch.nn.functional as F
 import pytorch_lightning as pl
 from torchmetrics import Accuracy, Recall, Precision, ConfusionMatrix
+from thanos import model
 
 from thanos.model import GestureTransformer
 from thanos.trainers.config import BaseTrainConfig
@@ -10,10 +11,12 @@ from thanos.trainers.criterion import Criterion
 from thanos.trainers.log_utils import get_wandb_confusion_matrix_plot
 
 class LitGestureTransformer(pl.LightningModule):
-    def __init__(self, config:BaseTrainConfig,**kwargs) -> None:
+    def __init__(self, config:BaseTrainConfig, override_model_config={}, **kwargs) -> None:
         super().__init__(**kwargs)
         self.config = config
-        self.model = GestureTransformer(**config.model_config())
+        model_config = config.model_config()
+        model_config.update(override_model_config)
+        self.model = GestureTransformer(**model_config)
         self.criterion = Criterion(**config.criterion_config())
         self.val_acc = Accuracy()
         self.val_confusion_matrix = ConfusionMatrix(self.model.num_classes)
