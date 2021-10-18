@@ -2,7 +2,6 @@ import numpy as np
 import torch
 from torch2trt import torch2trt
 import time
-from tqdm import tqdm
 
 from thanos.model.resnet import resnet10, resnet18
 from thanos.model.utils import count_parameters
@@ -16,9 +15,10 @@ def trt_measure_inference_time(model, input_shape, N=10):
         model(x)
 
     meas_time = []
-    for i in tqdm(range(N)):
+    for i in range(N):
         tic = time.time()
-        model(x)
+        y = model(x)
+        print(y.cpu().shape)
         toc = time.time()
         print((toc - tic)*1000, "ms")
         meas_time.append(toc - tic)
@@ -32,19 +32,12 @@ def trt_measure_inference_time(model, input_shape, N=10):
 
 if __name__ == "__main__":
     device = torch.device("cuda")
-    # print("=== Resnet 10 ===")
-    # model = resnet10().eval().cuda()
-    # x = torch.rand((2, 3, 240, 240)).cuda()
-    # model_trt = torch2trt(model, [x], max_batch_size=2)
-    # print(f"Gesture Detector: {count_parameters(model):,d} params")
-    # meas_time_ms = trt_measure_inference_time(model_trt, (2, 3, 640, 480), N=5)
-    # print(meas_time_ms)
-
-    print("=== Resnet 18 ===")
-    test_shape = (20, 3, 240, 240)
+    test_shape = (1, 3, 240, 240)
     model = resnet18().eval().cuda()
     x = torch.rand(test_shape).cuda()
-    model_trt = torch2trt(model, [x], max_batch_size=test_shape[0])
+    model_trt = torch2trt(
+        model, [x], max_batch_size=test_shape[0],
+        fp16_mode=True)
     print(f"Gesture Detector: {count_parameters(model):,d} params")
     meas_time_ms = trt_measure_inference_time(model_trt, test_shape, N=10)
     print(meas_time_ms)

@@ -5,3 +5,4 @@ pytorch-lightning
 wandb
 sklearn
 plotly
+pycuda<2021.1
