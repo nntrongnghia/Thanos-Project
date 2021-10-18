@@ -27,6 +27,7 @@ class GestureTransformer(nn.Module):
         **kwargs):
 
         super().__init__()
+        self.seq_len = seq_len
         self.encoder_dim = encoder_dim
         self.num_classes = num_classes
         self.return_aux = return_aux

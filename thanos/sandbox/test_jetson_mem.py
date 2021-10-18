@@ -7,11 +7,11 @@ import numpy as np
 
 
 if __name__ == "__main__":
-    host_ft_maps = cuda.pagelocked_zeros((22, 512, 8, 8),np.float32)
+    host_ft_maps = cuda.pagelocked_zeros((22, 512),np.float32)
     device_ft_maps = cuda.mem_alloc(host_ft_maps.nbytes)
     try:
         while True:
-            host_ft_map = np.random.rand(512, 8, 8).astype(np.float32)
+            host_ft_map = np.random.rand(512).astype(np.float32)
 
             tic = time.time()
             cuda.memcpy_dtoh(host_ft_maps, device_ft_maps)

@@ -19,8 +19,8 @@ def trt_measure_inference_time(model, input_shape, N=10):
     meas_time = []
     for i in range(N):
         tic = time.time()
-        y = model(x)
-        print(y.cpu().shape)
+        model(x)
+        torch.cuda.synchronize()
         toc = time.time()
         meas_time.append(toc - tic)
     meas_time_ms = np.array(meas_time) * 1000
@@ -61,7 +61,6 @@ if __name__ == "__main__":
     print(f"Encoder: {count_parameters(model):,d} params")
     trt_model = torch2trt(model, [x], 
         fp16_mode=True, 
-        max_workspace_size=1<<30, 
         use_onnx=True,
         log_level=trt.Logger.INFO
     )

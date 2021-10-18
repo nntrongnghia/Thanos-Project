@@ -106,7 +106,9 @@ class MultiHeadAttention(nn.Module):
 class EncoderSelfAttention(nn.Module):
     def __init__(self, d_model, d_k, d_v, n_head, dff=512, dropout_transformer=.1, n_module=6, return_aux=False, seq_len=22):
         super(EncoderSelfAttention, self).__init__()
+        self.seq_len = seq_len
         self.return_aux = return_aux
+        self.encoder_dim = d_model
         self.encoder = nn.ModuleList([MultiHeadAttention(d_model, d_k, d_v, n_head, dff, dropout_transformer)
                                       for _ in range(n_module)])
         self.pos_embedding_table = sinusoid_encoding_table(seq_len, d_model)
