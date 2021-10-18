@@ -30,6 +30,7 @@ class HostDeviceMem(object):
         self.shape = shape
         self.dtype = dtype
         self.name = name
+        self.binding = int(self.device)
 
     def __str__(self):
         return "Host:\n" + str(self.host) + "\nDevice:\n" + str(self.device)
@@ -68,9 +69,9 @@ def allocate_buffers(context, stream=None, sync_mode=True):
         bindings.append(int(device_mem))
         # Append to the appropriate list.
         if context.engine.binding_is_input(binding):
-            inputs.append(HostDeviceMem(host_mem, device_mem, shape, dtype, binding))
+            inputs.append(HostDeviceMem(host_mem, device_mem, shape, dtype))
         else:
-            outputs.append(HostDeviceMem(host_mem, device_mem, shape, dtype, binding))
+            outputs.append(HostDeviceMem(host_mem, device_mem, shape, dtype))
     return inputs, outputs, bindings, stream
 
 
