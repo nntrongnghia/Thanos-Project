@@ -59,6 +59,7 @@ def allocate_buffers(context, stream=None, sync_mode=True):
         stream = cuda.Stream()
     for binding in context.engine:
         binding_idx = context.engine.get_binding_index(binding)
+        name = context.engine.get_binding_name(binding_idx)
         shape = context.get_binding_shape(binding_idx)
         size = trt.volume(shape) * context.engine.max_batch_size
         dtype = trt.nptype(context.engine.get_binding_dtype(binding))
@@ -69,9 +70,9 @@ def allocate_buffers(context, stream=None, sync_mode=True):
         bindings.append(int(device_mem))
         # Append to the appropriate list.
         if context.engine.binding_is_input(binding):
-            inputs.append(HostDeviceMem(host_mem, device_mem, shape, dtype))
+            inputs.append(HostDeviceMem(host_mem, device_mem, shape, dtype, name))
         else:
-            outputs.append(HostDeviceMem(host_mem, device_mem, shape, dtype))
+            outputs.append(HostDeviceMem(host_mem, device_mem, shape, dtype, name))
     return inputs, outputs, bindings, stream
 
 
