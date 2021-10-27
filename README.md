@@ -59,3 +59,4 @@ Configuration: `thanos\trainers\expe\default_config.py`
 - Improve accuracy for isolated gesture
 - Add hand segmentation
 - Avoid early-detection
+- Improve latency in inference by preprocessing image on GPU
