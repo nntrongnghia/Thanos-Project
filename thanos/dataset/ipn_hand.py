@@ -169,7 +169,7 @@ class IPN(data.Dataset):
         6 : "Throw down", 
         7 : "Throw left", 
         8 : "Throw right", 
-        9 : "Open twice", 
+        9 : "Open", 
         10 : "Double click w one finger", 
         11 : "Double click w two fingers", 
         12 : "Zoom in", 

@@ -60,7 +60,6 @@ class TRTExecutor:
             self.engine = engine
         self.context = self.engine.create_execution_context()
         
-        # TODO: test this mode later with DETR segmentaion
         if not has_dynamic_shape:
             self.inputs, self.outputs, self.bindings, self.stream = allocate_buffers(
                 self.context, self.stream, self.sync_mode

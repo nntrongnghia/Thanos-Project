@@ -2,7 +2,9 @@ import os
 import pycuda.driver as cuda
 import tensorrt as trt
 import ctypes
-
+import cv2
+import numpy as np
+from thanos.dataset import IPN
 
 def GiB(val):
     """Calculate Gibibit in bits, used to set workspace for TensorRT engine builder."""
@@ -135,3 +137,46 @@ def execute_sync(context, bindings, inputs, outputs):
     for out in outputs:
         out.host = out.host.reshape(out.shape)
     return [out.host for out in outputs]
+
+
+
+def draw_result_on_frame(frame:np.ndarray, gesture_id:int):
+        """In-place draw gesture name on frame
+
+        Parameters
+        ----------
+        frame: np.ndarray
+            dtype uint8, shape (H, W, 3)
+        gesture_id: int
+            gesture id
+        """
+        if gesture_id == 0: # no gesture
+            return frame
+        else:
+            cv2.putText(
+                frame, 
+                f"{gesture_id} {IPN.ID_NAME_DICT[gesture_id]}", # text
+                (10, int(frame.shape[0]*0.95)), # position
+                cv2.FONT_HERSHEY_DUPLEX, # font
+                1, # font scale
+                (255, 0, 255) # font color
+            )
+
+def draw_fps_on_frame(frame:np.ndarray, fps:int):
+        """In-place draw gesture name on frame
+
+        Parameters
+        ----------
+        frame: np.ndarray
+            dtype uint8, shape (H, W, 3)
+        gesture_id: int
+            gesture id
+        """
+        cv2.putText(
+            frame, 
+            f"{fps} FPS", # text
+            (10, int(frame.shape[0]*0.10)), # position
+            cv2.FONT_HERSHEY_DUPLEX, # font
+            1, # font scale
+            (255, 0, 255) # font color
+        )

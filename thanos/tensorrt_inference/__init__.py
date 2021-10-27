@@ -1,1 +1,2 @@
 from .trt_executor import TRTExecutor
+from .trt_gesture_transformer import TRTGestureTransformer

@@ -8,7 +8,7 @@ from thanos.dataset import INPUT_MEAN, INPUT_STD
 class TRTGestureTransformer():
     INPUT_MEAN = np.array(INPUT_MEAN, dtype=np.float32)
     INPUT_STD = np.array(INPUT_STD, dtype=np.float32)
-    def __init__(self, backbone_path, encoder_path):
+    def __init__(self, backbone_path, encoder_path, normalize_image=True):
         """
         Parameters
         ----------
@@ -29,6 +29,7 @@ class TRTGestureTransformer():
         assert self.input_size[0] == self.input_size[1]
         self.seq_len = self.encoder.inputs[0].shape[1]
         self.encoder_dim = self.encoder.inputs[0].shape[-1]
+        self.normalize_image = normalize_image
 
     def preprocess_image(self, img):
         """
@@ -48,17 +49,18 @@ class TRTGestureTransformer():
         """
         # 1. Resize
         scale = self.input_size[0]/img.shape[0]
-        size = (int(img.shape[0]*scale), int(img.shape[1]*scale))
+        size = (int(img.shape[1]*scale), int(img.shape[0]*scale))
         img = cv2.resize(img, size)
         # 1. Center crop
         center_x = img.shape[1] // 2
         x = center_x - self.input_size[1]//2
         img = img[:, x:x + self.input_size[1]]
         # 2. Normalize image
-        img = img.astype(np.float32)
-        img = (img - self.INPUT_MEAN)/self.INPUT_STD
+        if self.normalize_image:
+            img = img.astype(np.float32)/255.0
+            img = (img - self.INPUT_MEAN)/self.INPUT_STD
         # 3. Transpose image
-        img = np.moveaxis(img, [0, 1, 2], [1, 2, 0])
+        img = np.transpose(img, (2, 0, 1))
         img = np.ascontiguousarray(img)
         return img
 
@@ -67,7 +69,8 @@ class TRTGestureTransformer():
         Output will be store in memory buffer of self.backbone.outputs
         """
         assert isinstance(img, np.ndarray)
-        assert img.shape[-2] == self.input_size[0] and img.shape[-1] == self.input_size[1]
+        assert img.shape[-2] == self.input_size[0], f"{img.shape[-2]} {self.input_size[0]}"
+        assert img.shape[-1] == self.input_size[1], f"{img.shape[-1]} {self.input_size[1]}"
         self.backbone(img)
 
     def update_sequence_ft_vectors(self):
@@ -88,6 +91,7 @@ class TRTGestureTransformer():
         m_outputs = self.encoder.execute()
         return m_outputs["logits"]
 
+    
 
     def __call__(self, img):
         """
@@ -117,7 +121,7 @@ if __name__ == "__main__":
     encoder_path = "weights/baseline_encoder_fp16.trt"
 
     model = TRTGestureTransformer(backbone_path, encoder_path)
-    img = np.random.rand(240, 240, 3)
+    img = np.random.rand(360, 640, 3)
 
     while True:
         t = time.time()

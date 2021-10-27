@@ -37,7 +37,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("config", type=str, help="Path to config py file")
     parser.add_argument("checkpoint", type=str, help="Path to checkpoint")
-    parser.add_argument("--fp16", action="store_true", help="Use FP16 precision")
+    # parser.add_argument("--fp16", action="store_true", help="Use FP16 precision")
     parser.add_argument("--verbose", action="store_true", help="TensorRT verbose log")
 
     args = parser.parse_args()
@@ -56,13 +56,10 @@ if __name__ == "__main__":
         input_names=["image"],
         output_names=["ft_vec"],
         use_onnx=True,
-        fp16_mode=args.fp16,
+        fp16_mode=True,
         log_level=trt_logger)
     # Save trt_model
-    if not args.fp16:
-        trt_engine_path = "".join(args.checkpoint.split(".")[:-1]) + "_backbone.trt"
-    else:
-        trt_engine_path = "".join(args.checkpoint.split(".")[:-1]) + "_backbone_fp16.trt"
+    trt_engine_path = "".join(args.checkpoint.split(".")[:-1]) + "_backbone_fp16.trt"
     # torch.save(trt_model.state_dict(), trt_engine_path)
     with open(trt_engine_path, "wb") as f:
         print("Serializing TensorRT engine:")
