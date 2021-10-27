@@ -49,7 +49,7 @@ Configuration: `thanos\trainers\expe\default_config.py`
 - Validation accuracy: 0.75
 
 ## Inference in Jetson Nano
-![GIF inference on Jetson Nano](images\jetson_nano_camera_inference.gif)
+![GIF inference on Jetson Nano](images/jetson_nano_camera_inference.gif)
 
 - Model predict well some gesture.
 - Model can distint non-gesture movement vs hand gesture.
