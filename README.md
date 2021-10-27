@@ -51,7 +51,7 @@ Configuration: `thanos\trainers\expe\default_config.py`
 ## Inference in Jetson Nano
 ![GIF inference on Jetson Nano](images/jetson_nano_camera_inference.gif)
 
-- Model predict well some gesture.
+- Model predicts well some gesture.
 - Model can distint non-gesture movement vs hand gesture.
 - There are some early-detections which lead to a reduce in accuracy.
 
