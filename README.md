@@ -48,7 +48,7 @@ Configuration: `thanos\trainers\expe\default_config.py`
 - Number of epochs: 20
 - Validation accuracy: 0.75
 
-## Inference in Jetson Nano
+## Inference with Jetson Nano
 ![GIF inference on Jetson Nano](images/jetson_nano_camera_inference.gif)
 
 - Model predicts well some gesture.
