@@ -14,12 +14,17 @@ pip install -r requirements.txt
 - Add this directory in your PYTHONPATH
 
 
-# Dataset preparing
+# IPN Hand Dataset
 - Download [IPN Hand dataset](https://gibranbenitez.github.io/IPN_Hand/)
 - Create `dataset_config.json` in the `Thanos-Project` directory with key-value:
     - "ipn": "path/to/ipn/root"
 - Download annotation `ipnall.json` from [official repository](https://github.com/GibranBenitez/IPN-hand/blob/master/annotation_ipnGesture/ipnall.json), put it in `path_to_ipn_root/annotations/` 
 
+# Model architecture
+
+![image](images/model.jpg)
+
+[A Transformer-Based Network for Dynamic Hand Gesture Recognition](https://iris.unimore.it/retrieve/handle/11380/1212263/282584/3DV_2020.pdf)
 
 # Training
 ```
