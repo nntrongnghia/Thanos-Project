@@ -1,3 +1,5 @@
+"""From https://github.com/aimagelab/TransformerBasedGestureRecognition
+"""
 import torch
 import torch.nn as nn
 import torchvision
